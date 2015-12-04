@@ -1,0 +1,19 @@
+{
+  "name": "react_project",
+  "version": "0.1.0",
+  "description": "a simple react app",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "body-parser": "^1.14.1",
+    "chai": "^3.4.1",
+    "chai-http": "^1.0.0",
+    "express": "^4.13.3",
+    "mocha": "^2.3.4",
+    "mongoose": "^4.2.9"
+  }
+}
