@@ -1,9 +1,9 @@
 var mongoose = require('mongoose');
 
 var commentSchema = new mongoose.Schema({
-  body: {type: String, required: true},
+  text: {type: String, required: true},
   author: {type: String, default: 'Anonyomous'},
-  timeStamp: Number
+  timestamp: String
 
 });
 

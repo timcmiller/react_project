@@ -1,8 +1,11 @@
 var express = require('express');
 var bodyParser = require('body-parser');
-var Comment = require(__dirnam + '/../models/comment.js');
+var Comment = require(__dirname + '/../models/comment.js');
 
 var commentRouter = module.exports = exports = express.Router();
+
+commentRouter.use(bodyParser.json());
+commentRouter.use(bodyParser.urlencoded({extended: true}));
 
 commentRouter.get('/comments', function(req, res) {
   Comment.find({}, function(err, data) {
