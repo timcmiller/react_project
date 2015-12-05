@@ -17,15 +17,14 @@ var Comment = React.createClass({
   },
 
   handleCommentDelete: function() {
-    console.log(this.props.id);
     $.ajax({
       url: this.props.url + '/' + this.props.id,
-      dataType: 'json',
       type: 'DELETE',
       success: function(data) {
-      },
+        console.log(data);
+      }.bind(this),
       error: function(xhr, status, err) {
-        console.error(this.props.url, status, err.toString());
+        console.error('this is an error', this.props.url, status, err.toString());
       }.bind(this)
     });
   },
@@ -38,7 +37,6 @@ var Comment = React.createClass({
         </h2>
         <p className="commentTimestamp">{this.props.timestamp}</p>
         <span dangerouslySetInnerHTML={this.rawMarkup()} />
-        <p>{this.props.id}</p>
         <CommentDeleteButton onCommentDelete={this.handleCommentDelete}/>
       </div>
     );
@@ -48,7 +46,6 @@ var Comment = React.createClass({
 var CommentDeleteButton = React.createClass({
 
   handleDelete: function(e) {
-    console.log('handleDelete');
     e.preventDefault();
     this.props.onCommentDelete();
   },
@@ -57,7 +54,6 @@ var CommentDeleteButton = React.createClass({
     return (
       <form className="commentDeleteButton" onSubmit={this.handleDelete}>
         <input type="submit" value="DELETE" />
-        <p></p>
       </form>
     );
   }

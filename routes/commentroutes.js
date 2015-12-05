@@ -15,7 +15,7 @@ commentRouter.get('/comments', function(req, res) {
   });
 });
 
-commentRouter.post('/comments', bodyParser.json(), function(req, res) {
+commentRouter.post('/comments', function(req, res) {
   var newComment = new Comment(req.body);
 
   newComment.save(function(err, data) {
@@ -25,7 +25,7 @@ commentRouter.post('/comments', bodyParser.json(), function(req, res) {
   });
 });
 
-commentRouter.put('/comments/:id', bodyParser.json(), function(req, res) {
+commentRouter.put('/comments/:id', function(req, res) {
   var commentData = req.body;
   delete commentData._id;
   Comment.update({_id: req.params.id}, commentData, function(err) {
@@ -35,8 +35,9 @@ commentRouter.put('/comments/:id', bodyParser.json(), function(req, res) {
   });
 });
 
-commentRouter.delete('/comments/:id', bodyParser.json(), function(req, res) {
-  comment.remove({_id: req.params.id}, function(err) {
+commentRouter.delete('/comments/:id', function(req, res) {
+
+  Comment.remove({_id: req.params.id}, function(err) {
     if(err) throw err;
 
     res.send('deleted!');
