@@ -16,6 +16,20 @@ var Comment = React.createClass({
     return { __html: rawMarkup };
   },
 
+  handleCommentDelete: function() {
+    console.log(this.props.id);
+    $.ajax({
+      url: this.props.url + '/' + this.props.id,
+      dataType: 'json',
+      type: 'DELETE',
+      success: function(data) {
+      },
+      error: function(xhr, status, err) {
+        console.error(this.props.url, status, err.toString());
+      }.bind(this)
+    });
+  },
+
   render: function() {
     return (
       <div className="comment">
@@ -24,8 +38,27 @@ var Comment = React.createClass({
         </h2>
         <p className="commentTimestamp">{this.props.timestamp}</p>
         <span dangerouslySetInnerHTML={this.rawMarkup()} />
-        <CommentDeleteButton />
+        <p>{this.props.id}</p>
+        <CommentDeleteButton onCommentDelete={this.handleCommentDelete}/>
       </div>
+    );
+  }
+});
+
+var CommentDeleteButton = React.createClass({
+
+  handleDelete: function(e) {
+    console.log('handleDelete');
+    e.preventDefault();
+    this.props.onCommentDelete();
+  },
+
+  render: function() {
+    return (
+      <form className="commentDeleteButton" onSubmit={this.handleDelete}>
+        <input type="submit" value="DELETE" />
+        <p></p>
+      </form>
     );
   }
 });
@@ -37,7 +70,7 @@ var CommentBox = React.createClass({
       dataType: 'json',
       cache: false,
       success: function(data) {
-        this.setState({data: data});
+        this.setState({data: data, url: this.props.url});
       }.bind(this),
       error: function(xhr, status, err) {
         console.error(this.props.url, status, err.toString());
@@ -59,7 +92,7 @@ var CommentBox = React.createClass({
       type: 'POST',
       data: comment,
       success: function(data) {
-        this.setState({data: data});
+        this.setState({data: data, url: this.props.url});
       }.bind(this),
       error: function(xhr, status, err) {
         this.setState({data: comments});
@@ -78,7 +111,7 @@ var CommentBox = React.createClass({
     return (
       <div className="commentBox">
         <h1>Comments</h1>
-        <CommentList data={this.state.data} />
+        <CommentList url={this.props.url} data={this.state.data} />
         <CommentForm onCommentSubmit={this.handleCommentSubmit} />
       </div>
     );
@@ -87,15 +120,16 @@ var CommentBox = React.createClass({
 
 var CommentList = React.createClass({
   render: function() {
+    var url = this.props.url
     var commentNodes = this.props.data.map(function(comment) {
       return (
-        <Comment author={comment.author} key={comment.timestamp} timestamp={comment.timestamp}>
+        <Comment url={url} id={comment._id} author={comment.author} key={comment.timestamp} timestamp={comment.timestamp}>
           {comment.text}
         </Comment>
       );
     });
     return (
-      <div className="commentList">
+      <div url={this.props.url} className="commentList">
         {commentNodes}
       </div>
     );
@@ -139,37 +173,6 @@ var CommentForm = React.createClass({
           onChange={this.handleTextChange}
         />
         <input type="submit" value="Post" />
-      </form>
-    );
-  }
-});
-
-var CommentDeleteButton = React.createClass({
-
-  handleDelete: function(e) {
-    e.preventDefault();
-    this.handleCommentDelete(this.props.comment);
-  },
-  handleCommentDelete: function(comment) {
-    $.ajax({
-      url: this.props.url + this.state.data.id,
-      dataType: 'json',
-      type: 'DELETE',
-      data: comment,
-      success: function(data) {
-        this.setState({author: data});
-      }.bind(this),
-      error: function(xhr, status, err) {
-        this.setState({data: comments});
-        console.error(this.props.url, status, err.toString());
-      }.bind(this)
-    });
-  },
-
-  render: function() {
-    return (
-      <form className="commentDeleteButton" onSubmit={this.handleDelete}>
-        <input type="submit" value="DELETE" />
       </form>
     );
   }
