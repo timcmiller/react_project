@@ -9,7 +9,6 @@ app.use('/api', commentsRouter);
 
 app.use('/', express.static(__dirname + '/public'));
 
-
 app.use(function(req, res) {
   res.status(404).send('could not find file');
 });
