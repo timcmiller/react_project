@@ -36,7 +36,7 @@ var Comment = React.createClass({
           {this.props.author}
         </h2>
         <p className="commentTimestamp">{this.props.timestamp}</p>
-        <span dangerouslySetInnerHTML={this.rawMarkup()} />
+        <span className="commentText" dangerouslySetInnerHTML={this.rawMarkup()} />
         <CommentDeleteButton onCommentDelete={this.handleCommentDelete}/>
       </div>
     );
@@ -106,7 +106,7 @@ var CommentBox = React.createClass({
   render: function() {
     return (
       <div className="commentBox">
-        <h1>Comments</h1>
+        <h1 className="heading">Comments</h1>
         <CommentList url={this.props.url} data={this.state.data} />
         <CommentForm onCommentSubmit={this.handleCommentSubmit} />
       </div>
