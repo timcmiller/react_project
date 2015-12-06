@@ -83,6 +83,7 @@ var CommentEditButton = React.createClass({
 
   handleFormEdit: function(comment) {
     this.props.onCommentEdit(comment);
+    this.setState({showResults: !this.state.showResults});
   },
 
   getInitialState: function() {
