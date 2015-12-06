@@ -1,3 +1,5 @@
+//Modified from Facebooks react tutorial
+
 var Comment = React.createClass({
   rawMarkup: function() {
     var rawMarkup = marked(this.props.children.toString(), {sanitize: true});
