@@ -29,6 +29,24 @@ var Comment = React.createClass({
     });
   },
 
+  handleCommentEdit: function(data) {
+    data.text = data.text || this.props.text;
+    data.author = data.author || this.props.author;
+
+    $.ajax({
+      url: this.props.url + '/' +this.props.id,
+      dataType: 'json',
+      type: 'PUT',
+      data: data,
+      success: function(data) {
+        console.log(data);
+      },
+      error: function(xhr, status, err) {
+        console.log('this is an error on the put method', this.props.url, status, err.toString());
+      }.bind(this)
+    });
+  },
+
   render: function() {
     return (
       <div className="comment">
@@ -38,6 +56,7 @@ var Comment = React.createClass({
         <p className="commentTimestamp">{this.props.timestamp}</p>
         <span dangerouslySetInnerHTML={this.rawMarkup()} />
         <CommentDeleteButton onCommentDelete={this.handleCommentDelete}/>
+        <CommentEditButton onCommentEdit={this.handleCommentEdit}/>
       </div>
     );
   }
@@ -58,6 +77,78 @@ var CommentDeleteButton = React.createClass({
     );
   }
 });
+
+//spencer
+var CommentEditButton = React.createClass({
+
+  handleFormEdit: function(comment) {
+    this.props.onCommentEdit(comment);
+  },
+
+  getInitialState: function() {
+    return { showResults: false };
+  },
+
+  onClick: function() {
+    this.setState({showResults: !this.state.showResults});
+  },
+
+  render: function() {
+    return (
+      <div>
+        <input type="submit" value={this.state.showResults ? "CANCEL" : "EDIT"} onClick={this.onClick} />
+        { this.state.showResults ? <CommentEditForm onCommentEdit={this.handleFormEdit} /> : null }
+      </div>
+    );
+  }
+
+});
+
+var CommentEditForm = React.createClass({
+  getInitialState: function() {
+    return {author: '', text: ''};
+  },
+
+  handleAuthorChange: function(e) {
+    this.setState({author: e.target.value});
+  },
+
+  handleTextChange: function(e) {
+    this.setState({text: e.target.value});
+  },
+
+  handleEdit: function(e) {
+    e.preventDefault();
+    var author = this.state.author.trim();
+    var text = this.state.text.trim();
+    if(!text && !author) {
+      return;
+    }
+    this.props.onCommentEdit({author: author, text: text});
+    this.setState({author: '', text: ''});
+  },
+
+  render: function() {
+    return(
+      <form className="commentForm" onSubmit={this.handleEdit}>
+        <input
+          type="text"
+          placeholder="Your name"
+          value={this.state.author}
+          onChange={this.handleAuthorChange}/>
+        <input
+          type="text"
+          placeholder="Edit this comment ..."
+          value={this.state.text}
+          onChange={this.handleTextChange}/>
+        <input type="submit" value="EDIT" />
+      </form>
+      );
+  }
+});
+
+
+//end
 
 var CommentBox = React.createClass({
   loadCommentsFromServer: function() {
