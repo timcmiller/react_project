@@ -1,6 +1,7 @@
 //Modified from Facebooks react tutorial
 
 var Comment = React.createClass({
+
   rawMarkup: function() {
     var rawMarkup = marked(this.props.children.toString(), {sanitize: true});
     return { __html: rawMarkup };
@@ -22,6 +23,8 @@ var Comment = React.createClass({
   handleCommentEdit: function(data) {
     data.text = data.text || this.props.text;
     data.author = data.author || this.props.author;
+    data.timestamp = new Date().toString();
+    data.editing = true;
 
     $.ajax({
       url: this.props.url + '/' +this.props.id,
@@ -38,15 +41,16 @@ var Comment = React.createClass({
   },
 
   render: function() {
+
     return (
       <div className="comment">
         <h2 className="commentAuthor">
           {this.props.author}
         </h2>
-        <p className="commentTimestamp">{this.props.timestamp}</p>
+        <p className="commentTimestamp">{ this.props.editing ? 'Last Edited: ' : null }{this.props.timestamp}</p>
         <span dangerouslySetInnerHTML={this.rawMarkup()} />
         <CommentDeleteButton onCommentDelete={this.handleCommentDelete}/>
-        <CommentEditButton onCommentEdit={this.handleCommentEdit}/>
+        <CommentEditButton onCommentEdit={this.handleCommentEdit} author={this.props.author} text={this.props.text} />
       </div>
     );
   }
@@ -88,7 +92,7 @@ var CommentEditButton = React.createClass({
     return (
       <div>
         <input type="submit" value={this.state.showResults ? "CANCEL" : "EDIT"} onClick={this.onClick} />
-        { this.state.showResults ? <CommentEditForm onCommentEdit={this.handleFormEdit} /> : null }
+        { this.state.showResults ? <CommentEditForm onCommentEdit={this.handleFormEdit} author={this.props.author} text={this.props.text} /> : null }
       </div>
     );
   }
@@ -124,12 +128,12 @@ var CommentEditForm = React.createClass({
       <form className="commentForm" onSubmit={this.handleEdit}>
         <input
           type="text"
-          placeholder="Your name"
+          placeholder={this.props.author}
           value={this.state.author}
           onChange={this.handleAuthorChange}/>
         <input
           type="text"
-          placeholder="Edit this comment ..."
+          placeholder={this.props.text}
           value={this.state.text}
           onChange={this.handleTextChange}/>
         <input type="submit" value="EDIT" />
@@ -159,6 +163,7 @@ var CommentBox = React.createClass({
   handleCommentSubmit: function(comment) {
     var comments = this.state.data;
     comment.timestamp = new Date().toString();
+    comment.editing = false;
     var newComments = comments.concat([comment]);
     this.setState({data: newComments});
     $.ajax({
@@ -198,7 +203,7 @@ var CommentList = React.createClass({
     var url = this.props.url
     var commentNodes = this.props.data.map(function(comment) {
       return (
-        <Comment url={url} id={comment._id} author={comment.author} key={comment.timestamp} timestamp={comment.timestamp}>
+        <Comment url={url} editing={comment.editing} text={comment.text} id={comment._id} author={comment.author} key={comment.timestamp} timestamp={comment.timestamp}>
           {comment.text}
         </Comment>
       );
