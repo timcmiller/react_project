@@ -7,7 +7,7 @@ mongoose.connect(process.env.MONGOLAB_URL || 'mongodb://localhost/react_dev');
 
 app.use('/api', commentsRouter);
 
-app.use('/', express.static(__dirname + '/public'));
+app.use('/', express.static(__dirname + '/build'));
 
 app.use(function(req, res) {
   res.status(404).send('could not find file');
